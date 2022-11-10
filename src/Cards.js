@@ -1,4 +1,7 @@
 import './App.css';
+import './Cards.css';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
 
 export default function Cards() {
@@ -16,7 +19,6 @@ export default function Cards() {
             });
         console.log(deckID);
     }
-
 
     function getCard(setCard, currentCards) {
         fetch('https://deckofcardsapi.com/api/deck/' + deckID + '/draw/?count=1')
@@ -44,13 +46,32 @@ export default function Cards() {
     return (<div className="App">
             <header className="App-header">
                 {/*{card && <img src={card.image}></img>}      dies hat nur funktioniert als card oben noch kein Array war*/}
-                <button onClick={(e) => getCard(setPlayercard, playercard)}>Player</button>
-                {playercard.map((c) => <img src={c.image}></img>)}
+                <Grid container rowSpacing={3} alignItems="flex-start" justifyContent="center">
+                    <Grid item>
+                        <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>Player</Button>
+                    </Grid>
+                    <Grid container spacing={5} alignItems="center" justifyContent="center">
+                        {playercard.map((c) => <Grid item>
+                            <img src={c.image}></img>
+                            <p>{c.value}</p>
+                        </Grid>)}
+                    </Grid>
 
-                <button onClick={(e) => getCard(setDealercard, dealercard)}>Dealer</button>
-                {dealercard.map((c) => <img src={c.image}></img>)}
+                    <Grid item>
+                        <Button variant="contained" onClick={(e) => getCard(setDealercard, dealercard)}>Dealer</Button>
+                    </Grid>
+                    <Grid container spacing={5} alignItems="center" justifyContent="center">
+                        {dealercard.map((c) => <Grid item>
+                            <img src={c.image}></img>
+                            <p>{c.value}</p>
+                        </Grid>)}
+                    </Grid>
 
-                <button onClick={clearCards}>clear Cards</button>
+                    <Grid item>
+                        <Button variant="contained" onClick={clearCards}>Restart</Button>
+                    </Grid>
+
+                </Grid>
             </header>
         </div>
 
