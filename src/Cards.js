@@ -5,7 +5,7 @@ import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
 
 export default function Cards() {
-    const [deck, setDeck] = useState([]);
+    //const [deck, setDeck] = useState([]);
     const [deckID, setDeckID] = useState();
     const [dealercard, setDealercard] = useState([])
     const [playercard, setPlayercard] = useState([])
@@ -17,6 +17,7 @@ export default function Cards() {
             .catch((error) => {
                 console.error('Error:', error);
             });
+
         console.log(deckID);
     }
 
@@ -30,6 +31,25 @@ export default function Cards() {
             });
     }
 
+    function calculate(cards) {
+        let value;
+
+        for (const sum of cards) {
+            if (sum.value == "JACK" || sum.value == "QUEEN" || sum.value == "KING") {
+                value = value + 10;
+            } else if (sum.value == "ACE" && value <= 10) {
+                value = value + 11;
+            } else if (sum.value == "ACE" && value > 10) {
+                value = value + 1;
+            } else {
+                value = value + sum.value;
+            }
+        }
+
+        return value;
+
+    }
+
     function clearCards() {
         setPlayercard([]);
         setDealercard([]);
@@ -38,10 +58,14 @@ export default function Cards() {
     useEffect(() => {
         getDeck()
     }, []);               //Ruft beim starten der Seite die function getDeck () auf
+
     useEffect(() => {
         console.log(playercard)
+    }, [playercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
+
+    useEffect(() => {
         console.log(dealercard)
-    }, [playercard]);
+    }, [dealercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
 
     return (<div className="App">
             <header className="App-header">
@@ -77,27 +101,3 @@ export default function Cards() {
 
     )
 }
-
-/*
-export default function Cards() {
-
-    /!*const [deck, setDeck] = useState("");
-    const [cards, setCard] = useState([])
-
-    const btHandler = () =>
-        fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')*!/
-
-    return (
-        <div className="App">
-            <header className="App-header">
-
-                <p>Blackjack</p>
-
-                {/!*<div>
-                    <button>draw next card</button>
-                </div>*!/}
-
-            </header>
-        </div>
-    );
-}*/
