@@ -5,7 +5,9 @@ import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
 
 export default function Cards() {
-    //const [deck, setDeck] = useState([]);
+    const [playerValue, setPlayerValue] = useState(0);
+    const [dealerValue, setDealerValue] = useState(0);
+
     const [deckID, setDeckID] = useState();
     const [dealercard, setDealercard] = useState([])
     const [playercard, setPlayercard] = useState([])
@@ -29,30 +31,38 @@ export default function Cards() {
             .catch((error) => {
                 console.error('Error:', error);
             });
+
     }
 
-    function calculate(cards) {
-        let value;
+    function calculate(cards, setValue) {
 
+        let result = 0;
+        //console.log("not for" + cards);
         for (const sum of cards) {
+            //console.log("for")
             if (sum.value == "JACK" || sum.value == "QUEEN" || sum.value == "KING") {
-                value = value + 10;
-            } else if (sum.value == "ACE" && value <= 10) {
-                value = value + 11;
-            } else if (sum.value == "ACE" && value > 10) {
-                value = value + 1;
+                result += 10;
+                //console.log(result);
+            } else if (sum.value == "ACE" && result <= 10) {
+                result += 11;
+                //console.log(result);
+            } else if (sum.value == "ACE" && result > 10) {
+                result += 1;
+                //console.log(result);
             } else {
-                value = value + sum.value;
+                result += parseInt(sum.value);
+                console.log(result);
             }
         }
+        console.log(result)
 
-        return value;
-
+        setValue(result);
     }
 
     function clearCards() {
         setPlayercard([]);
         setDealercard([]);
+        //programm neu laden
     }
 
     useEffect(() => {
@@ -60,11 +70,25 @@ export default function Cards() {
     }, []);               //Ruft beim starten der Seite die function getDeck () auf
 
     useEffect(() => {
+        if(deckID != undefined) {
+            getCard(setPlayercard, playercard);
+            getCard(setPlayercard, playercard);
+            getCard(setDealercard, dealercard);
+        }
+    }, [deckID]);
+
+    useEffect(() => {
         console.log(playercard)
+        if (playercard != undefined) {
+            calculate(playercard, setPlayerValue);
+        }
     }, [playercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
 
     useEffect(() => {
         console.log(dealercard)
+        if (dealercard != undefined) {
+            calculate(dealercard, setDealerValue);
+        }
     }, [dealercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
 
     return (<div className="App">
@@ -75,10 +99,14 @@ export default function Cards() {
                         <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>Player</Button>
                     </Grid>
                     <Grid container spacing={5} alignItems="center" justifyContent="center">
-                        {playercard.map((c) => <Grid item>
-                            <img src={c.image}></img>
-                            <p>{c.value}</p>
-                        </Grid>)}
+                        {playercard.map((c) =>
+                            <Grid item>
+                                <img src={c.image}></img>
+                                <p>{c.value}</p>
+                            </Grid>)}
+                    </Grid>
+                    <Grid>
+                        {playerValue}
                     </Grid>
 
                     <Grid item>
@@ -89,6 +117,9 @@ export default function Cards() {
                             <img src={c.image}></img>
                             <p>{c.value}</p>
                         </Grid>)}
+                    </Grid>
+                    <Grid>
+                        {dealerValue}
                     </Grid>
 
                     <Grid item>
