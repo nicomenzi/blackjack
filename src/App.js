@@ -25,22 +25,9 @@ function App() {
 
 function finish(){
 
-  let playercard = Cards.playercard;
-  let dealercard = Cards.dealercard;
-
-  while (Cards.calculate(dealercard) < 17) {
-    Cards.getCard(Cards.setDealercard, dealercard);
-  }
-  let dealer = Cards.calculate(dealercard);
-  let player = Cards.calculate(playercard);
-
-    if (player > 21) {
-      return("You lost!");
-    }
-    else if (dealer > 21) {
-      return("You won!");
-    }
-    else if (player > dealer) {
+  let player = Cards.playerValue;
+  let dealer = Cards.dealerValue;
+    if (player > dealer) {
       return("You won!");
     }
     else if (player < dealer) {
