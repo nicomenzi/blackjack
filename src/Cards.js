@@ -3,6 +3,7 @@ import './Cards.css';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
+import App from "./App";
 
 export default function Cards() {
     const [playerValue, setPlayerValue] = useState(0);
@@ -54,6 +55,7 @@ export default function Cards() {
                 console.log(result);
             }
         }
+
         console.log(result)
 
         setValue(result);
@@ -70,7 +72,7 @@ export default function Cards() {
     }, []);               //Ruft beim starten der Seite die function getDeck () auf
 
     useEffect(() => {
-        if(deckID != undefined) {
+        if (deckID != undefined) {
             getCard(setPlayercard, playercard);
             getCard(setPlayercard, playercard);
             getCard(setDealercard, dealercard);
@@ -81,6 +83,10 @@ export default function Cards() {
         console.log(playercard)
         if (playercard != undefined) {
             calculate(playercard, setPlayerValue);
+            console.log(playerValue)
+            if (playerValue > 21) {
+                alert("You lost!");
+            }
         }
     }, [playercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
 
@@ -110,7 +116,7 @@ export default function Cards() {
                     </Grid>
 
                     <Grid item>
-                        <Button variant="contained" onClick={(e) => getCard(setDealercard, dealercard)}>Dealer</Button>
+                        <Button variant="contained" onClick={(e) => App.finish()}>Dealer</Button>
                     </Grid>
                     <Grid container spacing={5} alignItems="center" justifyContent="center">
                         {dealercard.map((c) => <Grid item>

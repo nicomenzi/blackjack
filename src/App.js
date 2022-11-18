@@ -23,8 +23,10 @@ function App() {
   );
 }
 
-function finish(player, dealer){
+function finish(){
 
+  let player = Cards.playerValue;
+  let dealer = Cards.dealerValue;
     if (player > dealer) {
       return("You won!");
     }
