@@ -35,19 +35,19 @@ function finish(){
   let player = Cards.calculate(playercard);
 
     if (player > 21) {
-      alert("You lost!");
+      return("You lost!");
     }
     else if (dealer > 21) {
-      alert("You won!");
+      return("You won!");
     }
     else if (player > dealer) {
-      alert("You won!");
+      return("You won!");
     }
     else if (player < dealer) {
-      alert("You lost!");
+      return("You lost!");
     }
     else {
-      alert("Draw!");
+      return("Draw!");
     }
 
 }
