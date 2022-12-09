@@ -3,7 +3,6 @@ import './Cards.css';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import {useEffect, useState} from 'react';
-import App from "./App";
 
 export default function Cards() {
     const [playerValue, setPlayerValue] = useState(0);
@@ -13,7 +12,9 @@ export default function Cards() {
     const [dealercard, setDealercard] = useState([])
     const [playercard, setPlayercard] = useState([])
 
-    function getDeck() {
+
+    //Ruft beim starten der Seite die function getDeck () auf
+    useEffect(() => {
         fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
             .then(response => response.json())
             .then(data => setDeckID(data.deck_id))
@@ -22,9 +23,9 @@ export default function Cards() {
             });
 
         console.log(deckID);
-    }
+    }, []);
 
-    function getCard(setCard, currentCards) {
+    const getCard = (setCard, currentCards) => {
         fetch('https://deckofcardsapi.com/api/deck/' + deckID + '/draw/?count=1')
             .then(response => response.json())
             .then(data => setCard(currentCards => [...currentCards, data.cards[0]]))
@@ -35,41 +36,54 @@ export default function Cards() {
 
     }
 
-    function calculate(cards, setValue) {
+    const calculate = (cards, isPlayer) => {
+        const VALUE_10 = ['JACK', 'QUEEN', 'KING']
 
         let result = 0;
         //console.log("not for" + cards);
         for (const sum of cards) {
+            const sumValue = sum.value;
             //console.log("for")
-            if (sum.value == "JACK" || sum.value == "QUEEN" || sum.value == "KING") {
+            if (VALUE_10.includes(sumValue)) {
                 result += 10;
                 //console.log(result);
-            } else if (sum.value == "ACE" && result <= 10) {
+            } else if (sumValue == "ACE" && result <= 10) {
                 result += 11;
                 //console.log(result);
-            } else if (sum.value == "ACE" && result > 10) {
+            } else if (sumValue == "ACE" && result > 10) {
                 result += 1;
                 //console.log(result);
             } else {
-                result += parseInt(sum.value);
+                result += parseInt(sumValue);
                 console.log(result);
             }
         }
 
         console.log(result)
-
-        setValue(result);
+        isPlayer && setPlayerValue(result) || setDealerValue(result);
     }
 
-    function clearCards() {
+    const finish = (player, dealer) => {
+
+        //geht so nicht, da Value zu langsam geupdated wird
+        /*while (dealer < 17) {
+            getCard(setDealercard, dealercard);
+        }*/
+
+        if (player > dealer) {
+            alert("You won!");
+        } else if (player < dealer) {
+            alert("You lost!");
+        } else {
+            alert("Draw!");
+        }
+    }
+
+    const clearCards = () => {
         setPlayercard([]);
         setDealercard([]);
-        //programm neu laden
+        window.location.reload(false);
     }
-
-    useEffect(() => {
-        getDeck()
-    }, []);               //Ruft beim starten der Seite die function getDeck () auf
 
     useEffect(() => {
         if (deckID != undefined) {
@@ -81,28 +95,31 @@ export default function Cards() {
 
     useEffect(() => {
         console.log(playercard)
+
         if (playercard != undefined) {
-            calculate(playercard, setPlayerValue);
+            calculate(playercard, true);
             console.log(playerValue)
-            if (playerValue > 21) {
-                alert("You lost!");
+            const valueLost = playerValue > 21
+            if (valueLost) {
+                //geht so nocht nicht ganz, da Value zu langsam geupdated wird
+                alert("You lost")
+                window.location.reload(false);
             }
         }
     }, [playercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
 
     useEffect(() => {
         console.log(dealercard)
-        if (dealercard != undefined) {
-            calculate(dealercard, setDealerValue);
-        }
+        dealercard != undefined && calculate(dealercard, false)
     }, [dealercard]);     //wird erst gemacht, wenn playercard gemacht/abgefüllt wurde
+
 
     return (<div className="App">
             <header className="App-header">
                 {/*{card && <img src={card.image}></img>}      dies hat nur funktioniert als card oben noch kein Array war*/}
                 <Grid container rowSpacing={3} alignItems="flex-start" justifyContent="center">
                     <Grid item>
-                        <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>Player</Button>
+                        <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
                     </Grid>
                     <Grid container spacing={5} alignItems="center" justifyContent="center">
                         {playercard.map((c) =>
@@ -116,7 +133,8 @@ export default function Cards() {
                     </Grid>
 
                     <Grid item>
-                        <Button variant="contained" onClick={(e) => App.finish()}>Dealer</Button>
+                        <Button variant="contained"
+                                onClick={(e) => finish(playerValue, dealerValue)}>stand</Button>
                     </Grid>
                     <Grid container spacing={5} alignItems="center" justifyContent="center">
                         {dealercard.map((c) => <Grid item>
