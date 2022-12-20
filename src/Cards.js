@@ -23,7 +23,7 @@ export default function Cards() {
         console.log(deckID);
     }, []);
 
-    const getCard = (setCard, currentCards) => {
+    const getCard = (setCard, currentCards, isPlayer) => {
         fetch('https://deckofcardsapi.com/api/deck/' + deckID + '/draw/?count=1')
             .then(response => response.json())
             .then(data => setCard(currentCards => [...currentCards, data.cards[0]]))
@@ -31,6 +31,7 @@ export default function Cards() {
             .catch((error) => {
                 console.error('Error:', error);
             });
+        calculate(currentCards, isPlayer);
     }
 
     const clearCards = () => {
@@ -39,7 +40,7 @@ export default function Cards() {
         window.location.reload(false);
     }
 
-    const calculate = (cards, isPlayer) => {
+    const calculate = async (cards, isPlayer) => {
         const VALUE_10 = ['JACK', 'QUEEN', 'KING']
 
         let result = 0;
@@ -57,8 +58,8 @@ export default function Cards() {
             }
         }
 
-        console.log(result);
         isPlayer ? setPlayerValue(result) : setDealerValue(result);
+        await delay(500);
 
     }
 
@@ -66,12 +67,11 @@ export default function Cards() {
 
     const finish = async (player) => {
 
-        //so gaht das nöd
-        /*while (dealerValue < 17) {
-            getCard(setDealercard, dealercard);
-            await delay(500);
-            calculate(dealercard, false);
-        }*/
+        while (dealerValue < 17) {
+            getCard(setDealercard, dealercard, false);
+            await delay(250)
+            console.log(dealerValue)
+        }
 
         if (player > dealerValue) {
             alert("You won!");
