@@ -7,7 +7,7 @@ export default function Cards() {
     const [playerValue, setPlayerValue] = useState(0);
     const [dealerValue, setDealerValue] = useState(0);
     const [winValue, setWinValue] = useState(0);
-    const [loseValue, setLoseValue] = useState(0);
+    const [lostValue, setLostValue] = useState(0);
     const [drawValue, setDrawValue] = useState(0);
 
     const [deckID, setDeckID] = useState();
@@ -15,15 +15,17 @@ export default function Cards() {
     const [playercard, setPlayercard] = useState([])
 
     useEffect(() => {
+        getDeck();
+    }, []);
+
+    const getDeck = () => {
         fetch('https://deckofcardsapi.com/api/deck/new/shuffle/?deck_count=1')
             .then(response => response.json())
             .then(data => setDeckID(data.deck_id))
             .catch((error) => {
                 console.error('Error:', error);
             });
-
-        console.log(deckID);
-    }, []);
+    }
 
     const getCard = (setCard, currentCards, isPlayer) => {
         fetch('https://deckofcardsapi.com/api/deck/' + deckID + '/draw/?count=1')
@@ -36,10 +38,10 @@ export default function Cards() {
         calculate(currentCards, isPlayer);
     }
 
-    const clearCards = () => {
+    const clear = () => {
         setPlayercard([]);
         setDealercard([]);
-        window.location.reload(false);
+        getDeck();
     }
 
     const calculate = async (cards, isPlayer) => {
@@ -76,18 +78,25 @@ export default function Cards() {
         }*/
 
         if (player > dealerValue) {
-            //alert("You won!");
-            setWinValue(+1);
-            window.location.reload(false);
+            alert("You won!");
+            setWinValue(winValue + 1);
+            clear();
+            //neue DeckId
         } else if (player < dealerValue) {
-            //alert("You lost!");
-            setLoseValue(+1);
-            window.location.reload(false);
+            alert("You lost!");
+            setLostValue(lostValue + 1);
+            clear();
+            //neue DeckId
         } else {
-            //alert("Draw!");
-            window.location.reload(false);
-            setDrawValue(+1);
+            alert("Draw!");
+            setDrawValue(drawValue + 1);
+            clear();
+            //neue DeckId
         }
+    }
+
+    const restart = () => {
+        window.location.reload(false);
     }
 
     useEffect(() => {
@@ -116,15 +125,15 @@ export default function Cards() {
         if (valueLost) {
             //geht so nocht nicht ganz, da Value zu langsam geupdated wird
             setTimeout(() => {
-                //alert("You lost")
-                window.location.reload(false);
+                alert("You lost");
+                setLostValue(lostValue + 1);
+                clear();
             }, 100);
         }
     }, [playerValue]);
 
 //Ruft beim starten der Seite die function getDeck () auf
-    return (
-        <Grid className="maincon" container direction="row" justifyContent="center" alignItems="center">
+    return (<Grid className="maincon" container direction="row" justifyContent="center" alignItems="center">
             <Grid item xs={12}>
                 <h1 className="title" id="title">Blackjack</h1>
             </Grid>
@@ -139,7 +148,7 @@ export default function Cards() {
                 </Grid>
 
                 <Grid xs={2}>
-                    <Button variant="contained" onClick={clearCards}>Restart</Button>
+                    <Button variant="contained" onClick={restart}>Restart</Button>
                 </Grid>
 
                 <Grid xs={5}>
@@ -199,10 +208,9 @@ export default function Cards() {
                 </Grid>
 
                 <Grid xs={5}>
-                    lost games {loseValue}
+                    lost games {lostValue}
                 </Grid>
             </Grid>
 
-        </Grid>
-    )
+        </Grid>)
 }
