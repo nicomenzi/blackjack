@@ -1,4 +1,3 @@
-import './App.css';
 import './Cards.css';
 import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
@@ -7,6 +6,9 @@ import {useEffect, useState} from 'react';
 export default function Cards() {
     const [playerValue, setPlayerValue] = useState(0);
     const [dealerValue, setDealerValue] = useState(0);
+    const [winValue, setWinValue] = useState(0);
+    const [loseValue, setLoseValue] = useState(0);
+    const [drawValue, setDrawValue] = useState(0);
 
     const [deckID, setDeckID] = useState();
     const [dealercard, setDealercard] = useState([])
@@ -67,21 +69,24 @@ export default function Cards() {
 
     const finish = async (player) => {
 
-        while (dealerValue < 17) {
+        /*while (dealerValue < 17) {
             getCard(setDealercard, dealercard, false);
             await delay(250)
             console.log(dealerValue)
-        }
+        }*/
 
         if (player > dealerValue) {
-            alert("You won!");
+            //alert("You won!");
+            setWinValue(+1);
             window.location.reload(false);
         } else if (player < dealerValue) {
-            alert("You lost!");
+            //alert("You lost!");
+            setLoseValue(+1);
             window.location.reload(false);
         } else {
-            alert("Draw!");
+            //alert("Draw!");
             window.location.reload(false);
+            setDrawValue(+1);
         }
     }
 
@@ -111,53 +116,93 @@ export default function Cards() {
         if (valueLost) {
             //geht so nocht nicht ganz, da Value zu langsam geupdated wird
             setTimeout(() => {
-                alert("You lost")
+                //alert("You lost")
                 window.location.reload(false);
             }, 100);
         }
     }, [playerValue]);
 
 //Ruft beim starten der Seite die function getDeck () auf
-    return (<div className="App">
+    return (
+        <Grid className="maincon" container direction="row" justifyContent="center" alignItems="center">
+            <Grid item xs={12}>
+                <h1 className="title" id="title">Blackjack</h1>
+            </Grid>
 
-        <header className="App-header">
-            <container rowSpacing={3} alignItems="flex-start" justifyContent="center">
-
-                <Grid item>
+            <Grid className="buttoncon"
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center">
+                <Grid xs={5}>
                     <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
                 </Grid>
 
-                <Grid container spacing={5} alignItems="center" justifyContent="center">
-                    {playercard.map((c) => <Grid item>
-                        <img src={c.image} alt="PlayerCard"></img>
-                        <p>{c.value}</p>
-                    </Grid>)}
+                <Grid xs={2}>
+                    <Button variant="contained" onClick={clearCards}>Restart</Button>
                 </Grid>
 
-                <Grid>
-                    {playerValue}
-                </Grid>
-
-                <Grid item>
+                <Grid xs={5}>
                     <Button variant="contained"
                             onClick={(e) => finish(playerValue)}>stand</Button>
                 </Grid>
-                <Grid container spacing={5} alignItems="center" justifyContent="center">
-                    {dealercard.map((c) => <Grid item>
-                        <img src={c.image} alt="DealerCard"></img>
-                        <p>{c.value}</p>
-                    </Grid>)}
-                </Grid>
-                <Grid>
-                    {dealerValue}
+            </Grid>
+
+            <Grid className="cardcon"
+                  container
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems="center">
+                <Grid className="player" item xs={5}>
+                    <Grid container
+                          direction="row"
+                          justifyContent="center"
+                          alignItems="center">
+                        {playercard.map((c) => <Grid item>
+                            <img src={c.image} alt="PlayerCard"></img>
+                            <p>{c.value}</p>
+                        </Grid>)}
+                    </Grid>
+
+                    Score: {playerValue}
                 </Grid>
 
-                <Grid item>
-                    <Button variant="contained" onClick={clearCards}>Restart</Button>
+                <Grid item xs={2}></Grid>
+
+                <Grid className="dealer" item xs={5}>
+                    <Grid container
+                          direction="row"
+                          justifyContent="center"
+                          alignItems="center">
+                        {dealercard.map((c) => <Grid item>
+                            <img src={c.image} alt="DealerCard"></img>
+                            <p>{c.value}</p>
+                        </Grid>)}
+                    </Grid>
+
+                    Score: {dealerValue}
                 </Grid>
-            </container>
+            </Grid>
 
-        </header>
 
-    </div>)
+            <Grid className="gamescon"
+                  container
+                  direction="row"
+                  justifyContent="center"
+                  alignItems="center">
+                <Grid xs={5}>
+                    won games {winValue}
+                </Grid>
+
+                <Grid xs={2}>
+                    draw games {drawValue}
+                </Grid>
+
+                <Grid xs={5}>
+                    lost games {loseValue}
+                </Grid>
+            </Grid>
+
+        </Grid>
+    )
 }
