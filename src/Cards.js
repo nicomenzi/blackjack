@@ -86,7 +86,7 @@ export default function Cards() {
             async function finish2() {
                 console.log("playerValue: " + playerValue);
                 console.log("dealerValue: " + dealerValue);
-                if (dealerValue > 17) {
+                if (dealerValue >= 17) {
 
                     if (dealerValue > 21) {
                         await delay(250)
