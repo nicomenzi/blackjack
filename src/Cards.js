@@ -27,7 +27,7 @@ export default function Cards() {
             });
     }
 
-    const getCard = (setCard, currentCards, isPlayer) => {
+    const getCard = async (setCard, currentCards, isPlayer) => {
         fetch('https://deckofcardsapi.com/api/deck/' + deckID + '/draw/?count=1')
             .then(response => response.json())
             .then(data => setCard(currentCards => [...currentCards, data.cards[0]]))
@@ -35,7 +35,9 @@ export default function Cards() {
             .catch((error) => {
                 console.error('Error:', error);
             });
-        calculate(currentCards, isPlayer);
+        console.log(dealercard);
+        console.log(isPlayer);
+        await calculate(dealercard, isPlayer);
     }
 
     const clear = () => {
@@ -45,6 +47,10 @@ export default function Cards() {
     }
 
     const calculate = async (cards, isPlayer) => {
+        if(!isPlayer){
+            cards = dealercard;
+        }
+
         const VALUE_10 = ['JACK', 'QUEEN', 'KING']
 
         let result = 0;
@@ -61,7 +67,7 @@ export default function Cards() {
                 result += parseInt(sumValue);
             }
         }
-
+        console.log("isPlayer" + isPlayer);
         isPlayer ? setPlayerValue(result) : setDealerValue(result);
         await delay(500);
 
@@ -71,11 +77,12 @@ export default function Cards() {
 
     const finish = async (player) => {
 
-        /*while (dealerValue < 17) {
-            getCard(setDealercard, dealercard, false);
+        while (dealerValue < 17) {
+            await getCard(setDealercard, dealercard, false);
+            console.log("dealerValue: " + dealerValue);
             await delay(250)
             console.log(dealerValue)
-        }*/
+        }
 
         if (player > dealerValue) {
             alert("You won!");
@@ -100,10 +107,56 @@ export default function Cards() {
     }
 
     useEffect(() => {
+        async function finish2() {
+            console.log("playerValue: " + playerValue);
+            console.log("dealerValue: " + dealerValue);
+            if (dealerValue >= 17) {
+
+                if (dealerValue > 21) {
+                    await delay(250)
+                    alert("You won!");
+                    setWinValue(winValue + 1);
+                    clear();
+                    window.location.reload(false);
+                }
+
+                if (playerValue > dealerValue) {
+                    await delay(250)
+                    alert("You won!");
+                    setWinValue(winValue + 1);
+                    clear();
+                    window.location.reload(false);
+                    //neue DeckId
+                } else if (playerValue < dealerValue) {
+                    await delay(250)
+                    alert("You lost!");
+                    setLostValue(lostValue + 1);
+                    clear();
+                    window.location.reload(false);
+                    //neue DeckId
+                } else {
+                    await delay(250)
+                    alert("Draw!");
+                    setDrawValue(drawValue + 1);
+                    clear();
+                    window.location.reload(false);
+                    //neue DeckId
+                }
+
+            }
+        }
+        finish2();
+
+
+
+
+    },[dealerValue]);
+
+    useEffect(() => {
         if (deckID !== undefined) {
             getCard(setPlayercard, playercard);
             getCard(setPlayercard, playercard);
-            getCard(setDealercard, dealercard);
+            getCard(setDealercard, dealercard, false);
         }
     }, [deckID]);
 
@@ -153,7 +206,15 @@ export default function Cards() {
 
                 <Grid xs={5}>
                     <Button variant="contained"
-                            onClick={(e) => finish(playerValue)}>stand</Button>
+                            onClick={async(e) => {
+
+                                while (true) {
+                                    await getCard(setDealercard, dealercard, false);
+                                    console.log("dealerValue: " + dealerValue);
+                                    await delay(250)
+                                    console.log(dealerValue)
+                                }
+                            }}>stand</Button>
                 </Grid>
             </Grid>
 
