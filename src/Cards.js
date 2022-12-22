@@ -165,15 +165,16 @@ export default function Cards() {
               justifyContent="center"
               alignItems="center">
             <Grid xs={5}>
-                <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
+                <Button variant="contained" color="success"
+                        onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
             </Grid>
 
             <Grid xs={2}>
-                <Button variant="contained" onClick={restart}>Restart</Button>
+                <Button variant="contained" color="error" onClick={restart}>Restart</Button>
             </Grid>
 
             <Grid xs={5}>
-                <Button variant="contained"
+                <Button variant="contained" color="warning"
                         onClick={async (e) => {
                             while (true) {
                                 await getCard(setDealercard, dealercard, false);
@@ -191,6 +192,7 @@ export default function Cards() {
               justifyContent="space-between"
               alignItems="center">
             <Grid className="player" item xs={5}>
+                <p>Player</p>
                 <Grid container
                       direction="row"
                       justifyContent="center"
@@ -201,12 +203,13 @@ export default function Cards() {
                     </Grid>)}
                 </Grid>
 
-                Score: {playerValue}
+                <p>Score: {playerValue}</p>
             </Grid>
 
             <Grid item xs={2}></Grid>
 
             <Grid className="dealer" item xs={5}>
+                <p>Dealer</p>
                 <Grid container
                       direction="row"
                       justifyContent="center"
@@ -217,11 +220,11 @@ export default function Cards() {
                     </Grid>)}
                 </Grid>
 
-                Score: {dealerValue}
+                <p>Score: {dealerValue}</p>
             </Grid>
         </Grid>
 
-{/*        <Grid className="gamescon"
+        {/*        <Grid className="gamescon"
               container
               direction="row"
               justifyContent="center"
