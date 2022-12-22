@@ -44,10 +44,11 @@ export default function Cards() {
         setPlayercard([]);
         setDealercard([]);
         getDeck();
+        window.location.reload(true);
     }
 
     const calculate = async (cards, isPlayer) => {
-        if(!isPlayer){
+        if (!isPlayer) {
             cards = dealercard;
         }
 
@@ -75,82 +76,49 @@ export default function Cards() {
 
     const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-    const finish = async (player) => {
-
-        while (dealerValue < 17) {
-            await getCard(setDealercard, dealercard, false);
-            console.log("dealerValue: " + dealerValue);
-            await delay(250)
-            console.log(dealerValue)
-        }
-
-        if (player > dealerValue) {
-            alert("You won!");
-            setWinValue(winValue + 1);
-            clear();
-            //neue DeckId
-        } else if (player < dealerValue) {
-            alert("You lost!");
-            setLostValue(lostValue + 1);
-            clear();
-            //neue DeckId
-        } else {
-            alert("Draw!");
-            setDrawValue(drawValue + 1);
-            clear();
-            //neue DeckId
-        }
-    }
-
     const restart = () => {
         window.location.reload(false);
     }
 
     useEffect(() => {
-        async function finish2() {
-            console.log("playerValue: " + playerValue);
-            console.log("dealerValue: " + dealerValue);
-            if (dealerValue >= 17) {
 
-                if (dealerValue > 21) {
-                    await delay(250)
-                    alert("You won!");
-                    setWinValue(winValue + 1);
-                    clear();
-                    window.location.reload(false);
+        if (playercard !== undefined) {
+            async function finish2() {
+                console.log("playerValue: " + playerValue);
+                console.log("dealerValue: " + dealerValue);
+                if (dealerValue > 17) {
+
+                    if (dealerValue > 21) {
+                        await delay(250)
+                        alert("You won!");
+                        setWinValue(winValue + 1);
+                        clear();
+                    }
+
+                    if (playerValue > dealerValue) {
+                        await delay(250)
+                        alert("You won!");
+                        setWinValue(winValue + 1);
+                        clear();
+                    } else if (playerValue < dealerValue) {
+                        await delay(250)
+                        alert("You lost!");
+                        setLostValue(lostValue + 1);
+                        clear();
+                    } else {
+                        await delay(250)
+                        alert("Draw!");
+                        setDrawValue(drawValue + 1);
+                        clear();
+                    }
+
                 }
-
-                if (playerValue > dealerValue) {
-                    await delay(250)
-                    alert("You won!");
-                    setWinValue(winValue + 1);
-                    clear();
-                    window.location.reload(false);
-                    //neue DeckId
-                } else if (playerValue < dealerValue) {
-                    await delay(250)
-                    alert("You lost!");
-                    setLostValue(lostValue + 1);
-                    clear();
-                    window.location.reload(false);
-                    //neue DeckId
-                } else {
-                    await delay(250)
-                    alert("Draw!");
-                    setDrawValue(drawValue + 1);
-                    clear();
-                    window.location.reload(false);
-                    //neue DeckId
-                }
-
             }
+
+            finish2();
+
         }
-        finish2();
-
-
-
-
-    },[dealerValue]);
+    }, [dealerValue]);
 
     useEffect(() => {
         if (deckID !== undefined) {
@@ -187,91 +155,89 @@ export default function Cards() {
 
 //Ruft beim starten der Seite die function getDeck () auf
     return (<Grid className="maincon" container direction="row" justifyContent="center" alignItems="center">
-            <Grid item xs={12}>
-                <h1 className="title" id="title">Blackjack</h1>
+        <Grid item xs={12}>
+            <h1 className="title" id="title">Blackjack</h1>
+        </Grid>
+
+        <Grid className="buttoncon"
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center">
+            <Grid xs={5}>
+                <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
             </Grid>
 
-            <Grid className="buttoncon"
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  alignItems="center">
-                <Grid xs={5}>
-                    <Button variant="contained" onClick={(e) => getCard(setPlayercard, playercard)}>hit</Button>
-                </Grid>
-
-                <Grid xs={2}>
-                    <Button variant="contained" onClick={restart}>Restart</Button>
-                </Grid>
-
-                <Grid xs={5}>
-                    <Button variant="contained"
-                            onClick={async(e) => {
-
-                                while (true) {
-                                    await getCard(setDealercard, dealercard, false);
-                                    console.log("dealerValue: " + dealerValue);
-                                    await delay(250)
-                                    console.log(dealerValue)
-                                }
-                            }}>stand</Button>
-                </Grid>
+            <Grid xs={2}>
+                <Button variant="contained" onClick={restart}>Restart</Button>
             </Grid>
 
-            <Grid className="cardcon"
-                  container
-                  direction="row"
-                  justifyContent="space-between"
-                  alignItems="center">
-                <Grid className="player" item xs={5}>
-                    <Grid container
-                          direction="row"
-                          justifyContent="center"
-                          alignItems="center">
-                        {playercard.map((c) => <Grid item>
-                            <img src={c.image} alt="PlayerCard"></img>
-                            <p>{c.value}</p>
-                        </Grid>)}
-                    </Grid>
+            <Grid xs={5}>
+                <Button variant="contained"
+                        onClick={async (e) => {
+                            while (true) {
+                                await getCard(setDealercard, dealercard, false);
+                                console.log("dealerValue: " + dealerValue);
+                                await delay(250)
+                                console.log(dealerValue)
+                            }
+                        }}>stand</Button>
+            </Grid>
+        </Grid>
 
-                    Score: {playerValue}
+        <Grid className="cardcon"
+              container
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center">
+            <Grid className="player" item xs={5}>
+                <Grid container
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center">
+                    {playercard.map((c) => <Grid item>
+                        <img src={c.image} alt="PlayerCard"></img>
+                        <p>{c.value}</p>
+                    </Grid>)}
                 </Grid>
 
-                <Grid item xs={2}></Grid>
-
-                <Grid className="dealer" item xs={5}>
-                    <Grid container
-                          direction="row"
-                          justifyContent="center"
-                          alignItems="center">
-                        {dealercard.map((c) => <Grid item>
-                            <img src={c.image} alt="DealerCard"></img>
-                            <p>{c.value}</p>
-                        </Grid>)}
-                    </Grid>
-
-                    Score: {dealerValue}
-                </Grid>
+                Score: {playerValue}
             </Grid>
 
+            <Grid item xs={2}></Grid>
 
-            <Grid className="gamescon"
-                  container
-                  direction="row"
-                  justifyContent="center"
-                  alignItems="center">
-                <Grid xs={5}>
-                    won games {winValue}
+            <Grid className="dealer" item xs={5}>
+                <Grid container
+                      direction="row"
+                      justifyContent="center"
+                      alignItems="center">
+                    {dealercard.map((c) => <Grid item>
+                        <img src={c.image} alt="DealerCard"></img>
+                        <p>{c.value}</p>
+                    </Grid>)}
                 </Grid>
 
-                <Grid xs={2}>
-                    draw games {drawValue}
-                </Grid>
+                Score: {dealerValue}
+            </Grid>
+        </Grid>
 
-                <Grid xs={5}>
-                    lost games {lostValue}
-                </Grid>
+{/*        <Grid className="gamescon"
+              container
+              direction="row"
+              justifyContent="center"
+              alignItems="center">
+            <Grid xs={5}>
+                won games {winValue}
             </Grid>
 
-        </Grid>)
+            <Grid xs={2}>
+                draw games {drawValue}
+            </Grid>
+
+            <Grid xs={5}>
+                lost games {lostValue}
+            </Grid>
+        </Grid>*/}
+
+    </Grid>)
 }
